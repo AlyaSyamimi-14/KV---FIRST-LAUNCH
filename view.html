@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View Student Profile | KV Datuk Seri Mohd Zin</title>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+    :root {
+        --kv-primaryy: #003366;
+        --kv-primary: #003366;
+        --kv-header-orange: #F55729;
+        --sidebar-width: 280px;
+    }
+
+    body {
+        font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        display: flex;
+        background-color: #f4f7f6;
+        overflow-x: hidden;
+    }
+
+    /* ===== SIDEBAR ===== */
+    #sidebar {
+        width: var(--sidebar-width);
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        background-color: var(--kv-primary);
+        color: white;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        transition: 0.3s;
+        z-index: 1000;
+    }
+
+    #sidebar.collapsed { left: calc(var(--sidebar-width) * -1); }
+
+    #sidebar .logo { 
+        text-align: center; 
+        background: white; 
+        border-radius: 8px; 
+        padding: 10px; 
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        color: var(--kv-primary);
+        font-weight: bold;
+    }
+
+    #sidebar .logo img {
+        max-width: 210px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .role-badge {
+        background: var(--kv-header-orange);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    nav {
+        flex-grow: 1;
+    }
+
+    .nav-item {
+        padding: 12px 15px;
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        transition: 0.3s;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .nav-item svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+    }
+
+    .nav-item:hover, .nav-item.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border-left: 4px solid var(--kv-header-orange);
+    }
+
+    .logout-section {
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 15px;
+        margin-top: 15px;
+    }
+
+    .nav-item.logout {
+        color: #ff9a9a;
+    }
+
+    .nav-item.logout:hover {
+        background: rgba(255, 71, 71, 0.1);
+        color: #ff4747;
+    }
+
+    /* ===== MAIN WRAPPER ===== */
+    #main-wrapper {
+        margin-left: var(--sidebar-width);
+        width: 100%;
+        transition: 0.3s;
+        min-height: 100vh;
+    }
+
+    #main-wrapper.expanded { margin-left: 0; }
+
+    /* ===== HEADER ===== */
+    header {
+        background: var(--kv-header-orange);
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 30px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 8px;
+        transition: 0.2s;
+    }
+
+    .user-profile:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-icon {
+        width: 42px;
+        height: 42px;
+        background: #0d3b66; 
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        text-transform: uppercase;
+        border: 2px solid rgba(255,255,255,0.5);
+    }
+
+    /* ===== VIEW CONTENT ===== */
+    .container {
+        padding: 40px;
+    }
+
+    .view-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 700px;
+        margin: auto;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .view-card h2 {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+        color: var(--kv-primary);
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 15px;
+        text-align: center;
+    }
+
+    .detail-row {
+        display: flex;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .detail-label {
+        width: 200px;
+        font-weight: bold;
+        color: #666;
+    }
+
+    .detail-value {
+        color: #222;
+        flex: 1;
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-top: 20px;
+        background: var(--kv-primary);
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+</style>
+</head>
+
+<body>
+
+<aside id="sidebar">
+    <div class="logo">
+        <img src="WhatsApp Image 2026-01-11 at 12.37.08.jpeg">
+    </div>
+
+    <div class="role-badge" id="sidebar-role">Penyelaras Intervensi</div>
+
+    <nav id="sidebar-nav">
+        <a href="Dashboard.html" class="nav-item">Dashboard</a>
+        <a href="deleteaccount.html" class="nav-item" id="nav-account">Account</a>
+        <a href="main.html" class="nav-item">Student Class</a>
+        <a href="student-list.html" class="nav-item active">Student Profile</a>
+        <a href="testsubject.html" class="nav-item">Subject</a>
+        <a href="absent_record.html" class="nav-item">Absent Records</a>
+    </nav>
+
+    <div class="logout-section">
+        <a href="#" onclick="logoutUser()" class="nav-item logout">
+            <svg viewBox="0 0 24 24"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/></svg>
+            Logout
+        </a>
+    </div>
+</aside>
+
+<div id="main-wrapper">
+
+    <header id="header">
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <button onclick="toggleSidebar()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer; padding: 10px;">&#9776;</button>
+            <div class="fw-bold fs-5" style="white-space: nowrap;">Intervention: Student Management System</div>
+        </div>
+        <div class="user-profile" onclick="window.location.href='profile.html'" title="View Profile">
+            <span id="user-fullname" style="font-weight: 600;">Loading...</span>
+            <div class="user-icon" id="user-initial">-</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="view-card">
+            <h2>Student Details</h2>
+
+            <div class="detail-row">
+                <div class="detail-label">Full Name</div>
+                <div class="detail-value" id="v_name">-</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">IC Number</div>
+                <div class="detail-value" id="v_ic">-</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Class</div>
+                <div class="detail-value" id="v_cls">-</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Home Address</div>
+                <div class="detail-value" id="v_address">-</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Mother's Contact</div>
+                <div class="detail-value" id="v_mother">-</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Father's Contact</div>
+                <div class="detail-value" id="v_father">-</div>
+            </div>
+
+           
+        </div>
+    </div>
+</div>
+
+<script>
+// --- FUNGSI AUTO PROFILE & NAVIGATION CONTROL ---
+function loadProfile() {
+    const name = localStorage.getItem('reg_name');
+    const role = localStorage.getItem('reg_role');
+    const accountNav = document.getElementById('nav-account');
+    
+    if (name) {
+        document.getElementById('user-fullname').innerText = name;
+        document.getElementById('user-initial').innerText = name.trim().charAt(0).toUpperCase();
+    }
+    
+    if (role) {
+        document.getElementById('sidebar-role').innerText = role;
+        
+        // Sembunyikan Account jika bukan Penyelaras Intervensi
+        if (role !== "Penyelaras Intervensi") {
+            if (accountNav) accountNav.style.display = 'none';
+        }
+    }
+}
+
+function loadStudentData() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+    const students = JSON.parse(localStorage.getItem("students"));
+
+    if (students && students[id]) {
+        const s = students[id];
+        document.getElementById("v_name").innerText = s.name || "N/A";
+        document.getElementById("v_ic").innerText = s.ic || "N/A";
+        document.getElementById("v_cls").innerText = s.cls || "N/A";
+        document.getElementById("v_address").innerText = s.address || "N/A";
+        document.getElementById("v_mother").innerText = s.mother || "N/A";
+        document.getElementById("v_father").innerText = s.father || "N/A";
+    } else {
+        alert("Student record not found!");
+        window.location.href = "student-list.html";
+    }
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById('main-wrapper').classList.toggle('expanded');
+}
+
+function logoutUser() {
+    if(confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem('isLoggedIn');
+        window.location.href = "login.html";
+    }
+}
+
+window.onload = function() {
+    loadProfile();
+    loadStudentData();
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Update Account | KV Datuk Seri Mohd Zin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --kv-blue: #003366; 
+            --kv-orange: #F55729; 
+            --edit-blue: #007BFF;
+            --error-red: #d93025;
+            --delete-red: #DC3545; 
+            --success-green: #28a745;
+        }
+
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .profile-card { background: white; width: 100%; max-width: 500px; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 10px solid var(--kv-orange); position: relative; }
+        
+        .profile-header { text-align: center; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* UBAHAN: Tukar style avatar kepada bulat dengan inisial */
+        .avatar-placeholder { 
+            width: 100px; 
+            height: 100px; 
+            border-radius: 50%; 
+            background: var(--kv-blue); 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 40px; 
+            font-weight: bold; 
+            border: 3px solid var(--kv-orange); 
+            text-transform: uppercase;
+        }
+
+        h2 { margin: 10px 0 5px; color: var(--kv-blue); text-transform: uppercase; }
+        .role-text { color: var(--kv-orange); font-weight: bold; font-size: 14px; }
+
+        .form-group { margin-bottom: 12px; text-align: left; }
+        label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #f9f9f9; }
+        input.editable { background: #fff; border: 1px solid var(--edit-blue); }
+
+        #messageBox { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; display: none; text-align: center; }
+        .error { background: #fce8e6; color: var(--error-red); border: 1px solid var(--error-red); }
+        .success { background: #e6ffed; color: var(--success-green); border: 1px solid var(--success-green); }
+
+        .btn-group { 
+            display: flex; 
+            flex-direction: row; 
+            gap: 10px; 
+            margin-top: 25px; 
+            justify-content: center; 
+        }
+        
+        button { 
+            flex: 1; 
+            padding: 12px 5px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 13px; 
+            transition: 0.3s; 
+            border: none; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+        }
+        
+        .btn-edit { background: var(--edit-blue); color: white; }
+        .btn-edit:hover { background: #0056b3; }
+        
+        .btn-back { background: var(--kv-blue); color: white; }
+        .btn-back:hover { opacity: 0.9; }
+
+        .btn-save { background: var(--success-green); color: white; display: none; }
+        
+        .btn-cancel { background: #DC3545 !important; color: white; display: none; }
+        .btn-cancel:hover { background: #a71d2a; }
+
+        .modal { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="profile-card">
+    <div id="messageBox"></div>
+
+    <div class="profile-header">
+        <div id="display-initial" class="avatar-placeholder">?</div>
+        <h2 id="display-name">User Name</h2>
+        <span id="display-role" class="role-text">Role</span>
+    </div>
+
+    <form id="updateForm">
+        <div class="form-group"><label>Full Name</label><input type="text" id="input-name" readonly></div>
+        <div class="form-group"><label>IC Number</label><input type="text" id="input-ic" readonly></div>
+        <div class="form-group"><label>Official Email</label><input type="email" id="input-email" readonly></div>
+        <div class="form-group"><label>Phone Number</label><input type="text" id="input-phone" readonly></div>
+        <div class="form-group"><label>Date of Birth</label><input type="date" id="input-dob" readonly></div>
+
+        <div class="btn-group">
+            <button type="button" id="editBtn" class="btn-edit" onclick="enableEditing()">
+                <i></i> Edit
+            </button>
+            
+            <button type="button" id="backBtn" class="btn-back" onclick="window.location.href='dashboard.html'">
+                <i></i> Back
+            </button>
+
+            <button type="button" id="saveBtn" class="btn-save" onclick="processUpdate()">
+                <i></i> Save
+            </button>
+            <button type="button" id="cancelBtn" class="btn-cancel" onclick="cancelEditing()">
+                <i></i> Cancel
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const fields = ['name', 'ic', 'email', 'phone', 'dob'];
+    const msgBox = document.getElementById('messageBox');
+
+    function loadData() {
+        fields.forEach(f => {
+            const val = localStorage.getItem('reg_' + f);
+            document.getElementById('input-' + f).value = val || '';
+        });
+        
+        const name = localStorage.getItem('reg_name') || 'User';
+        document.getElementById('display-name').innerText = name;
+        document.getElementById('display-role').innerText = localStorage.getItem('reg_role') || 'Role';
+        
+        // UBAHAN: Set inisial nama secara automatik
+        document.getElementById('display-initial').innerText = name.charAt(0).toUpperCase();
+    }
+
+    function enableEditing() {
+        fields.forEach(f => {
+            const input = document.getElementById('input-' + f);
+            input.readOnly = false;
+            input.classList.add('editable');
+        });
+        document.getElementById('editBtn').style.display = 'none';
+        document.getElementById('backBtn').style.display = 'none';
+        document.getElementById('saveBtn').style.display = 'flex';
+        document.getElementById('cancelBtn').style.display = 'flex';
+    }
+
+    function cancelEditing() {
+        loadData();
+        disableEditing();
+    }
+
+    function disableEditing() {
+        fields.forEach(f => {
+            const input = document.getElementById('input-' + f);
+            input.readOnly = true;
+            input.classList.remove('editable');
+        });
+        document.getElementById('editBtn').style.display = 'flex';
+        document.getElementById('backBtn').style.display = 'flex';
+        document.getElementById('saveBtn').style.display = 'none';
+        document.getElementById('cancelBtn').style.display = 'none';
+    }
+
+    function processUpdate() {
+        let allFilled = true;
+        fields.forEach(f => {
+            if (!document.getElementById('input-' + f).value.trim()) allFilled = false;
+        });
+
+        if (!allFilled) {
+            msgBox.className = 'error';
+            msgBox.innerHTML = "Fill all fields.";
+            msgBox.style.display = 'block';
+            return;
+        }
+
+        fields.forEach(f => {
+            localStorage.setItem('reg_' + f, document.getElementById('input-' + f).value);
+        });
+
+        msgBox.className = 'success';
+        msgBox.innerHTML = "Profile updated.";
+        msgBox.style.display = 'block';
+        
+        // Kemaskini paparan nama dan inisial selepas save
+        const newName = document.getElementById('input-name').value;
+        document.getElementById('display-name').innerText = newName;
+        document.getElementById('display-initial').innerText = newName.charAt(0).toUpperCase();
+        
+        disableEditing();
+    }
+
+    window.onload = loadData;
+</script>
+
+</body>
+</html>

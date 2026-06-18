@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | KV Student Management</title>
+    <style>
+        :root { --kv-primary: #003366; --kv-header-orange: #F55729; --sidebar-width: 280px; --edit-blue: #007bff; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background-color: #f4f7f6; }
+        #sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; background-color: var(--kv-primary); color: white; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; z-index: 1000; }
+        #sidebar .logo { text-align: center; background: white; border-radius: 8px; padding: 10px; margin-bottom: 20px; }
+        #sidebar .logo img { max-width: 210px; height: auto; }
+        .role-badge { background: var(--kv-header-orange); padding: 8px 15px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 25px; text-align: center; text-transform: uppercase; }
+        nav { flex-grow: 1; }
+        .nav-item { padding: 12px 15px; color: rgba(255,255,255,0.8); text-decoration: none; display: flex; align-items: center; gap: 12px; border-radius: 8px; margin-bottom: 8px; transition: 0.3s; font-size: 15px; cursor: pointer; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; border-left: 4px solid var(--kv-header-orange); }
+        .logout-section { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        #main-wrapper { margin-left: var(--sidebar-width); width: 100%; min-height: 100vh; }
+        #header { background: var(--kv-header-orange); height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; color: white; }
+        .user-profile { display: flex; align-items: center; gap: 15px; cursor: pointer; padding: 5px 10px; border-radius: 30px; transition: 0.3s; }
+        .user-initial-icon { width: 45px; height: 45px; background: var(--kv-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; font-weight: bold; font-size: 20px; }
+        #content { padding: 40px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        #profile-section { display: none; animation: slideDown 0.4s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; text-align: left; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 13px; font-weight: bold; color: var(--kv-primary); }
+        .input-group input { padding: 12px; border: 2px solid #ddd; background: #f8f9fa; border-radius: 6px; font-size: 14px; color: #333; }
+        .input-group input.editable { border-color: var(--edit-blue); background: #fff; }
+        .input-group input:disabled { background: #e9ecef; color: #6c757d; cursor: not-allowed; }
+        .btn { padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; border: none; transition: 0.3s; }
+        .btn-edit { background: var(--kv-primary); color: white; }
+        .btn-back { background: #6c757d; color: white; }
+        .btn-save { background: #28a745; color: white; display: none; }
+        .btn-cancel { background: #dc3545; color: white; display: none; }
+    </style>
+</head>
+<body>
+    <aside id="sidebar">
+        <div class="logo"><img src="WhatsApp Image 2026-01-11 at 12.37.08.jpeg" alt="Logo"></div>
+        <div class="role-badge" id="display-role">STATUS</div>
+        <nav>
+            <a href="Dashboard.html" class="nav-item active">Dashboard</a>
+            <a href="viewTeacherAcc.html" id="nav-teacher-account" class="nav-item" style="display:none;">Teacher Account</a>
+            <a href="main.html" class="nav-item">Student Class</a>
+            <a href="student-list.html" class="nav-item">Student Profile</a>
+            <a href="testsubject.html" class="nav-item">Subject</a>
+            <a href="absent_record.html" class="nav-item">Absent Records</a>
+        </nav>
+        <div class="logout-section"><a onclick="logout()" class="nav-item">Logout</a></div>
+    </aside>
+
+    <div id="main-wrapper">
+        <header id="header">
+            <div style="font-weight: bold; font-size: 18px;">Intervention System</div>
+            <div class="user-profile" onclick="toggleProfile()">
+                <span id="user-fullname">User Name</span>
+                <div id="user-initial" class="user-initial-icon">?</div>
+            </div>
+        </header>
+
+        <main id="content">
+            <div class="card" id="welcome-card">
+                <h1 id="welcome-msg">Welcome!</h1>
+                <p>Status: <strong id="status-text">Teacher</strong></p>
+            </div>
+
+            <div class="card" id="profile-section">
+                <h2 id="profile-title" style="color: var(--kv-primary);">My Profile Information</h2>
+                <hr>
+                <div class="profile-grid">
+                    <div class="input-group"><label>Teacher ID</label><input type="text" id="profID" disabled></div>
+                    <div class="input-group"><label>IC Number</label><input type="text" id="profIC" disabled></div>
+                    <div class="input-group"><label>Full Name</label><input type="text" id="profName" class="profile-input" disabled></div>
+                    <div class="input-group"><label>Email Address</label><input type="email" id="profEmail" class="profile-input" disabled></div>
+                    <div class="input-group"><label>Phone Number</label><input type="text" id="profPhone" class="profile-input" disabled></div>
+                </div>
+                <div class="button-group" style="margin-top:20px; display:flex; gap:10px;">
+                    <button id="btn-edit" class="btn btn-edit" onclick="enableEdit()">EDIT PROFILE</button>
+                    <button id="btn-back" class="btn btn-back" onclick="toggleProfile()">BACK</button>
+                    <button id="btn-save" class="btn btn-save" onclick="updateProfile()">SAVE CHANGES</button>
+                    <button id="id-cancel" class="btn btn-cancel" onclick="disableEdit()">CANCEL</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onload = function() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') { window.location.href = "login.html"; return; }
+            updateHeaderInfo();
+            loadProfileData();
+        };
+
+        function updateHeaderInfo() {
+            const role = localStorage.getItem('active_role');
+            const name = localStorage.getItem('active_name');
+            document.getElementById('display-role').innerText = role || "Teacher";
+            document.getElementById('status-text').innerText = role || "Teacher";
+            document.getElementById('user-fullname').innerText = name || "User";
+            document.getElementById('welcome-msg').innerText = "Welcome, " + (name || "User");
+            document.getElementById('user-initial').innerText = name ? name.charAt(0).toUpperCase() : "?";
+            if (role === "Penyelaras Intervensi") document.getElementById('nav-teacher-account').style.display = 'flex';
+        }
+
+        function loadProfileData() {
+            document.getElementById('profID').value = localStorage.getItem('reg_id') || "N/A";
+            document.getElementById('profIC').value = localStorage.getItem('reg_ic') || "N/A";
+            document.getElementById('profName').value = localStorage.getItem('reg_name') || "";
+            document.getElementById('profEmail').value = localStorage.getItem('reg_email') || "";
+            document.getElementById('profPhone').value = localStorage.getItem('reg_phone') || "";
+        }
+
+        function toggleProfile() {
+            const ps = document.getElementById('profile-section');
+            const wc = document.getElementById('welcome-card');
+            if (ps.style.display === 'none' || ps.style.display === '') {
+                ps.style.display = 'block'; wc.style.display = 'none';
+                loadProfileData(); disableEdit();
+            } else { ps.style.display = 'none'; wc.style.display = 'block'; }
+        }
+
+        function enableEdit() {
+            document.querySelectorAll('.profile-input').forEach(input => { input.disabled = false; input.classList.add('editable'); });
+            document.getElementById('btn-edit').style.display = 'none';
+            document.getElementById('btn-back').style.display = 'none';
+            document.getElementById('btn-save').style.display = 'block';
+            document.getElementById('id-cancel').style.display = 'block';
+        }
+
+        function disableEdit() {
+            document.querySelectorAll('.profile-input').forEach(input => { input.disabled = true; input.classList.remove('editable'); });
+            document.getElementById('btn-edit').style.display = 'block';
+            document.getElementById('btn-back').style.display = 'block';
+            document.getElementById('btn-save').style.display = 'none';
+            document.getElementById('id-cancel').style.display = 'none';
+            loadProfileData();
+        }
+
+        function updateProfile() {
+            const name = document.getElementById('profName').value;
+            localStorage.setItem('active_name', name);
+            localStorage.setItem('reg_name', name);
+            localStorage.setItem('reg_email', document.getElementById('profEmail').value);
+            localStorage.setItem('reg_phone', document.getElementById('profPhone').value);
+            alert("Profile updated!");
+            updateHeaderInfo(); disableEdit();
+        }
+
+        function logout() { localStorage.clear(); window.location.href = "login.html"; }
+    </script>
+</body>
+</html>

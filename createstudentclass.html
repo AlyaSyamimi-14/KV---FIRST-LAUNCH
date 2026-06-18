@@ -1,0 +1,320 @@
+CREATE STUDENT CLASS
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KV Dashboard - Create Student Class</title>
+    <style>
+        :root {
+            --kv-primary: #003366;
+            --kv-header-orange: #F55729;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: #f4f7f6;
+            overflow-x: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        #sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            background-color: var(--kv-primary);
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+            z-index: 1000;
+        }
+        #sidebar.collapsed { left: calc(var(--sidebar-width) * -1); }
+
+        #sidebar .logo { 
+            text-align: center; 
+            background: white; 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 20px; 
+        }
+        #sidebar .logo img {
+            max-width: 210px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .role-badge {
+            background: var(--kv-header-orange);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        nav { flex-grow: 1; }
+
+        .nav-item {
+            padding: 12px 15px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: 0.3s;
+            font-size: 15px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 4px solid var(--kv-header-orange);
+        }
+
+        .nav-item.logout {
+            color: #ff9a9a;
+            margin-top: auto;
+            padding: 12px 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        #main-wrapper {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #main-wrapper.expanded { margin-left: 0; width: 100%; }
+
+        #header {
+            background: var(--kv-header-orange);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-profile { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            cursor: pointer;
+        }
+
+        .user-icon {
+            width: 45px;
+            height: 45px;
+            background-color: var(--kv-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        /* --- CONTENT --- */
+        #content { padding: 30px; }
+
+        .shadow-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .orange-bar {
+            width: 100%;
+            height: 4px;
+            background-color: var(--kv-header-orange);
+            margin: 10px 0 30px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label { font-weight: bold; margin-bottom: 8px; color: #333; }
+
+        input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<aside id="sidebar">
+    <div class="logo">
+        <img src="WhatsApp Image 2026-01-11 at 12.37.08.jpeg" alt="Logo">
+    </div>
+    <div class="role-badge" id="display-role">Staff</div>
+    <nav>
+        <a href="Dashboard.html" class="nav-item">Dashboard</a>
+        <a href="deleteaccount.html" id="nav-account" class="nav-item" style="display:none;">Account</a>
+        <a href="main.html" class="nav-item active">Student Class</a>
+        <a href="student-list.html" class="nav-item">Student Profile</a>
+        <a href="testsubject.html" class="nav-item">Subjects</a>
+        <a href="absent_record.html" class="nav-item">Absent Records</a>
+    </nav>
+    <a href="#" onclick="logoutUser()" class="nav-item logout">Logout</a>
+</aside>
+
+<div id="main-wrapper">
+    <header id="header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button onclick="toggleSidebar()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">&#9776;</button>
+            <span style="font-weight:500;">Intervention: Student Management System</span>
+        </div>
+        <div class="user-profile" onclick="window.location.href='profile.html'">
+            <span id="user-fullname">Loading...</span>
+            <div class="user-icon"><span id="user-initial">?</span></div>
+        </div>
+    </header>
+
+    <div id="content">
+        <div class="shadow-box">
+            <h1 style="margin:0;">Create Student Class</h1>
+            <div class="orange-bar"></div>
+
+            <!-- IMPORTANT: Use onsubmit="handleForm(event)" to prevent refresh -->
+            <form id="createForm" onsubmit="handleForm(event)">
+                <div class="form-group">
+                    <label for="classId">Class ID</label>
+                    <input type="text" id="classId" placeholder="Example: 1SVM KPD" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="className">Class Name</label>
+                    <input type="text" id="className" placeholder="Example: Computer Systems & Networking" required>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn-cancel" onclick="window.location.href='main.html'">Cancel</button>
+                    <button type="submit" class="btn-submit">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const storedName = localStorage.getItem('reg_name') || "Guest User";
+        const storedRole = localStorage.getItem('reg_role') || "Staff";
+
+        document.getElementById('user-fullname').innerText = storedName;
+        document.getElementById('display-role').innerText = storedRole;
+        document.getElementById('user-initial').innerText = storedName.charAt(0).toUpperCase();
+
+        if (storedRole === "Penyelaras Intervensi") {
+            const acc = document.getElementById('nav-account');
+            if(acc) acc.style.display = 'flex';
+        }
+    };
+
+    // Function to handle form submission
+    function handleForm(event) {
+        event.preventDefault(); // Prevents the page from refreshing
+        
+        const cid = document.getElementById("classId").value.trim();
+        const cname = document.getElementById("className").value.trim();
+
+        if (!cid || !cname) {
+            alert("Please fill in all the information!");
+            return;
+        }
+
+        let classes = JSON.parse(localStorage.getItem("classes")) || [];
+
+        // Check if Class ID already exists
+        if (classes.some(c => c.classId.toLowerCase() === cid.toLowerCase())) {
+            alert("This Class ID already exists!");
+            return;
+        }
+
+        // Save data (isArchived: false so it appears in main.html table)
+        const newClass = {
+            classId: cid,
+            className: cname,
+            isArchived: false 
+        };
+
+        classes.push(newClass);
+        localStorage.setItem("classes", JSON.stringify(classes));
+
+        alert("Class successfully registered!");
+        
+        // Redirect to main.html
+        window.location.href = "main.html";
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('main-wrapper').classList.toggle('expanded');
+    }
+
+    function logoutUser() {
+        if(confirm("Are you sure you want to log out?")) {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = "login.html";
+        }
+    }
+</script>
+
+</body>
+</html>

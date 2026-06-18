@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account type selection | KV Datuk Seri Mohd Zin</title>
+    <style>
+        :root { --kv-orange: #F55729; --error-red: #d93025; --kv-blue: #003366; }
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 40px 0; }
+        .container { background: #fff; width: 90%; max-width: 650px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 10px solid var(--kv-orange); overflow: hidden; }
+        .logo-section { padding: 30px; text-align: center; border-bottom: 1px solid #eee; }
+        .logo-section img { max-width: 250px; }
+        .form-content { padding: 40px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Error Box Style */
+        .error-message { width: 100%; background: #fce8e6; color: var(--error-red); padding: 12px; border-radius: 6px; border: 1px solid var(--error-red); margin-bottom: 20px; display: none; font-size: 13px; box-sizing: border-box; text-align: left; }
+        
+        h1 { text-transform: uppercase; font-weight: 900; margin-bottom: 5px; text-align: center; }
+        .role-indicator { font-size: 14px; color: #555; font-weight: bold; margin-bottom: 25px; background: #eef2f7; padding: 8px 15px; border-radius: 20px; display: inline-block; }
+        
+        form { width: 100%; }
+        label { display: block; font-weight: bold; font-size: 12px; margin-top: 15px; color: #333; text-align: left; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        
+        input.invalid { border: 2px solid var(--error-red); background-color: #fff9f9; }
+        
+        .upload-container { display: flex; flex-direction: column; align-items: center; margin-top: 10px; border: 2px dashed #ccc; padding: 20px; border-radius: 10px; background: #fafafa; transition: 0.3s; }
+        .upload-container.invalid { border-color: var(--error-red); }
+        #imagePreview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--kv-orange); display: none; }
+        
+        .btn-submit { width: 100%; margin-top: 20px; padding: 14px; background: #28a745; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        .btn-submit:hover { background: #218838; }
+        .btn-login { background: var(--kv-blue); margin-top: 10px; }
+        .btn-login:hover { background: #002244; }
+        
+        .login-link { margin-top: 20px; font-size: 14px; color: #666; }
+        .login-link a { color: var(--kv-blue); text-decoration: none; font-weight: bold; }
+        .login-link a:hover { text-decoration: underline; }
+
+        .step { display: none; width: 100%; text-align: center; }
+        .active { display: block; }
+    </style>
+</head>
+<body onload="initBuiltIn()"> 
+    <div class="container">
+        <div class="logo-section">
+            <img src="WhatsApp Image 2026-01-11 at 12.37.08.jpeg" alt="KV Logo">
+        </div>
+        
+        <div class="form-content">
+            <div id="errorBox" class="error-message"></div>
+
+            <div id="step0" class="step active">
+                <h1>Welcome</h1>
+                <p style="color: #666; margin-bottom: 30px;">INTERVENTIVE: STUDENT ABSENT MANAGEMENT SYSTEM</p>
+                <button type="button" class="btn-submit" onclick="goToSelection()">REGISTER</button>
+                <div class="login-link">
+                    Already have an account? <a href="login.html">Login here</a>
+                </div>
+            </div>
+            
+            <div id="step1" class="step">
+                <h1>Account type selection</h1>
+                <p style="color: #666; margin-bottom: 20px;">Select your role to start registration</p>
+                <label>Select Your Role</label>
+                <select id="roleSelect" onchange="nextStep()">
+                    <option value="">-- Choose Role --</option>
+                    <option value="Subject Teacher">Subject Teacher</option>
+                    <option value="Penyelaras Intervensi">Penyelaras Intervensi</option>
+                </select>
+                <div class="login-link">
+                    Already have an account? <a href="login.html">Login here</a>
+                </div>
+            </div>
+
+            <div id="step2" class="step">
+                <h1>Details</h1>
+                <div class="role-indicator" id="displayRole">Registering as: </div>
+
+                <form id="regForm">
+
+                    <label>Teacher ID</label>
+                    <input type="text" id="TeacherID" class="reg-input" placeholder="e.g. KVD001">
+                    
+                    <label>Full Name</label>
+                    <input type="text" id="NameST" class="reg-input" placeholder="As per IC">
+                    
+                    <label>IC Number</label>
+                    <input type="text" id="IcNumST" class="reg-input" placeholder="12-digit number">
+                    
+                    <label>Date of Birth</label>
+                    <input type="date" id="DOB_ST" class="reg-input">
+                    
+                    <label>Phone Number</label>
+                    <input type="text" id="PhoneNumST" class="reg-input" placeholder="0123456789">
+                    
+                    <label>Official Email</label>
+                    <input type="email" id="emailST" class="reg-input" placeholder="teacher@email.com">
+                    
+                    <label>Password</label>
+                    <input type="password" id="PasswordST" class="reg-input" placeholder="Min 8 characters">
+                    
+                    <button type="button" class="btn-submit" onclick="saveAndGoToLogin()">Save</button>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function initBuiltIn() {
+            localStorage.setItem('reg_id', 'KVD001');
+            localStorage.setItem('reg_pass', 'password123');
+            localStorage.setItem('reg_name', 'Muhammad Amin bin Abdullah');
+            localStorage.setItem('reg_role', 'Penyelaras Intervensi');
+            console.log("Built-in account forced: KVD001 / password123");
+        }
+
+        function goToSelection() {
+            document.getElementById('step0').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+        }
+
+
+        function nextStep() {
+            const role = document.getElementById('roleSelect').value;
+            if(role) {
+                document.getElementById('errorBox').style.display = 'none';
+                document.getElementById('displayRole').innerText = "Registering as: " + role;
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+            }
+        }
+
+        function saveAndGoToLogin() {
+            const errorBox = document.getElementById('errorBox');
+            const inputs = document.querySelectorAll('.reg-input');
+            let allFilled = true;
+
+            inputs.forEach(input => {
+                if (input.type !== 'file') {
+                    if (input.value.trim() === "") {
+                        allFilled = false;
+                        input.classList.add('invalid');
+                    } else {
+                        input.classList.remove('invalid');
+                    }
+                }
+            });
+
+            if (!allFilled) {
+                errorBox.style.display = 'block';
+                errorBox.innerHTML = "<strong>Incomplete Form:</strong> Please fill in all fields.";
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            localStorage.setItem('reg_id', document.getElementById('TeacherID').value);
+            localStorage.setItem('reg_pass', document.getElementById('PasswordST').value);
+            localStorage.setItem('reg_name', document.getElementById('NameST').value);
+            localStorage.setItem('reg_role', document.getElementById('roleSelect').value);
+            localStorage.setItem('reg_email', document.getElementById('emailST').value);
+            localStorage.setItem('reg_ic', document.getElementById('IcNumST').value);
+            localStorage.setItem('reg_phone', document.getElementById('PhoneNumST').value);
+            
+            // ALERT DIBUANG UNTUK TERUS NAVIGATE
+            window.location.href = "login.html";
+        }
+
+  function saveAndGoToLogin() {
+    const errorBox = document.getElementById('errorBox');
+    const inputs = document.querySelectorAll('.reg-input');
+    let allFilled = true;
+
+    inputs.forEach(input => {
+        if (input.type !== 'file') {
+            if (input.value.trim() === "") {
+                allFilled = false;
+                input.classList.add('invalid');
+            } else {
+                input.classList.remove('invalid');
+            }
+        }
+    });
+
+    if (!allFilled) {
+        errorBox.style.display = 'block';
+        errorBox.innerHTML = "<strong>Incomplete Form:</strong> Please fill in all fields.";
+        window.scrollTo(0, 0);
+        return;
+    }
+
+    // Save data
+    localStorage.setItem('reg_id', document.getElementById('TeacherID').value);
+    localStorage.setItem('reg_pass', document.getElementById('PasswordST').value);
+    localStorage.setItem('reg_name', document.getElementById('NameST').value);
+    localStorage.setItem('reg_role', document.getElementById('roleSelect').value);
+    localStorage.setItem('reg_email', document.getElementById('emailST').value);
+    localStorage.setItem('reg_ic', document.getElementById('IcNumST').value);
+    localStorage.setItem('reg_phone', document.getElementById('PhoneNumST').value);
+
+    // Set success flag
+    localStorage.setItem('registrationSuccess', 'true');
+
+    // Redirect
+    window.location.href = "login.html";
+}
+
+
+    </script>
+</body>
+</html>
